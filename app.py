@@ -142,6 +142,16 @@ def get_call_status(call_id):
         return jsonify({'status': 'unknown', 'error': 'Call not found'}), 404
 
 
+@app.route('/delete-call/<int:call_id>', methods=['POST'])
+def delete_call(call_id):
+    """Delete a call from the database."""
+    success = db.delete_call(call_id)
+    if success:
+        return redirect(url_for('index'))
+    else:
+        return "Call not found", 404
+
+
 def process_call_async(call_id, attendee_name, phone_number, meeting_description):
     """Background task to monitor call and process results."""
     try:

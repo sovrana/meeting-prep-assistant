@@ -6,7 +6,20 @@
       "Bash(pip3 install:*)",
       "Bash(python3:*)",
       "Bash(source venv/bin/activate)",
-      "Bash(python prep-meeting.py:*)"
+      "Bash(python prep-meeting.py:*)",
+      "Read(//Users/marclien/.ssh/**)",
+      "Bash(ssh-keygen:*)",
+      "Bash(cat:*)",
+      "Bash(git remote:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(ssh root@158.220.81.23 \"docker ps --format ''table {{.Names}}\\t{{.Status}}\\t{{.Ports}}'' | grep -i meeting\")",
+      "Bash(ssh root@158.220.81.23 \"docker ps\")",
+      "Bash(ssh:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(open https://github.com/sovrana/meeting-prep-assistant/settings/hooks)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

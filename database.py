@@ -161,6 +161,22 @@ class DatabaseClient:
             rows = cursor.fetchall()
             return [dict(row) for row in rows]
 
+    def delete_call(self, call_id: int) -> bool:
+        """
+        Delete a call from the database.
+
+        Args:
+            call_id: Database row ID
+
+        Returns:
+            True if deleted, False if not found
+        """
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('DELETE FROM calls WHERE id = ?', (call_id,))
+            conn.commit()
+            return cursor.rowcount > 0
+
     def get_stats(self) -> Dict:
         """
         Get database statistics.
