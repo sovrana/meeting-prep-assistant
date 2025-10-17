@@ -29,6 +29,12 @@
                         </span>
                     </div>
                 </div>
+                <button onclick="copyToClipboard()" class="btn" style="display: flex; align-items: center; gap: 0.5rem; white-space: nowrap;">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    <span id="copyButtonText">Copy All</span>
+                </button>
             </div>
         </div>
 
@@ -62,4 +68,51 @@
             {% endif %}
         </div>
     </div>
+
+    <!-- Hidden data for clipboard -->
+    <div id="clipboardData" style="display: none;">
+        <div id="summaryText">{{ call.summary if call.summary else '' }}</div>
+        <div id="transcriptText">{{ call.transcript if call.transcript else '' }}</div>
+    </div>
+
+    <script>
+        function copyToClipboard() {
+            const summary = document.getElementById('summaryText').textContent;
+            const transcript = document.getElementById('transcriptText').textContent;
+            const attendeeName = "{{ call.attendee_name }}";
+            const meetingDescription = "{{ call.meeting_description }}";
+            const callDate = "{{ call.call_timestamp_formatted }}";
+
+            // Format the content
+            const content = `Meeting Prep: ${attendeeName}
+Meeting: ${meetingDescription}
+Date: ${callDate}
+
+=== SUMMARY ===
+
+${summary}
+
+=== FULL TRANSCRIPT ===
+
+${transcript}`;
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(content).then(function() {
+                // Show success feedback
+                const buttonText = document.getElementById('copyButtonText');
+                const originalText = buttonText.textContent;
+                buttonText.textContent = '✓ Copied!';
+                buttonText.style.color = '#10b981';
+
+                // Reset after 2 seconds
+                setTimeout(function() {
+                    buttonText.textContent = originalText;
+                    buttonText.style.color = '';
+                }, 2000);
+            }).catch(function(err) {
+                alert('Failed to copy to clipboard');
+                console.error('Copy failed:', err);
+            });
+        }
+    </script>
 {% endblock %}
