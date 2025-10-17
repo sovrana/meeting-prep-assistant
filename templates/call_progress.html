@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Call in Progress - {{ attendee_name }}{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-header">
+            <h1 style="font-size: 1.75rem; font-weight: 700; color: #1f2937;">
+                📞 Call in Progress
+            </h1>
+        </div>
+        <div class="card-body">
+            <div style="text-align: center; padding: 2rem;">
+                <div style="margin-bottom: 2rem;">
+                    <div style="display: inline-block; width: 80px; height: 80px; border: 8px solid #e5e7eb; border-top-color: #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                </div>
+
+                <h2 style="font-size: 1.5rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">
+                    {{ attendee_name }}
+                </h2>
+                <p style="color: #6b7280; margin-bottom: 2rem;">
+                    {{ phone_number }}
+                </p>
+
+                <div id="status" style="background: #eff6ff; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                    <p style="color: #1e40af; font-weight: 500;" id="status-text">Initiating call...</p>
+                </div>
+
+                <div style="color: #6b7280; font-size: 0.9rem;">
+                    <p>This may take a few minutes.</p>
+                    <p style="margin-top: 0.5rem;">Call ID: <code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">{{ call_id }}</code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
+    <script>
+        const callId = "{{ call_id }}";
+        let pollCount = 0;
+        const maxPolls = 60; // 5 minutes (60 * 5 seconds)
+
+        function updateStatus(message) {
+            document.getElementById('status-text').textContent = message;
+        }
+
+        function pollCallStatus() {
+            fetch(`/api/call-status/${callId}`)
+                .then(response => response.json())
+                .then(data => {
+                    pollCount++;
+
+                    if (data.status === 'completed' && data.db_id) {
+                        updateStatus('✓ Call completed! Redirecting to summary...');
+                        setTimeout(() => {
+                            window.location.href = `/call/${data.db_id}`;
+                        }, 2000);
+                    } else if (data.status === 'failed' || data.status === 'error') {
+                        updateStatus('✗ Call failed: ' + (data.error || 'Unknown error'));
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 5000);
+                    } else if (pollCount >= maxPolls) {
+                        updateStatus('⏱ Timeout: Call is taking too long. Returning home...');
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 3000);
+                    } else {
+                        // Show friendly status messages
+                        let statusMsg = 'Initiating call...';
+                        if (data.status === 'in_progress' || data.status === 'ringing' || data.status === 'queued') {
+                            statusMsg = '📞 Call in progress...';
+                        } else if (data.status === 'initiated') {
+                            statusMsg = '🔄 Connecting to Vapi...';
+                        }
+
+                        const minutes = Math.floor(pollCount * 5 / 60);
+                        const seconds = (pollCount * 5) % 60;
+                        updateStatus(`${statusMsg} (${minutes}m ${seconds}s)`);
+
+                        setTimeout(pollCallStatus, 5000); // Poll every 5 seconds
+                    }
+                })
+                .catch(error => {
+                    console.error('Error polling status:', error);
+                    updateStatus('Error checking call status. Retrying...');
+                    setTimeout(pollCallStatus, 5000);
+                });
+        }
+
+        // Start polling after a brief delay
+        setTimeout(pollCallStatus, 3000);
+    </script>
+{% endblock %}

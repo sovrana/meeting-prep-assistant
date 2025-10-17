@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Meeting Prep Assistant - All Calls{% endblock %}
+
+{% block content %}
+    <!-- New Call Form -->
+    <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-header">
+            <h2 style="font-size: 1.25rem; font-weight: 600; color: #1f2937;">📞 Make a New Call</h2>
+        </div>
+        <div class="card-body">
+            <form action="/new-call" method="POST">
+                <div style="display: grid; gap: 1rem;">
+                    <div>
+                        <label for="attendee_name" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: #374151;">
+                            Attendee Name
+                        </label>
+                        <input
+                            type="text"
+                            id="attendee_name"
+                            name="attendee_name"
+                            required
+                            placeholder="John Smith"
+                            style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;"
+                        >
+                    </div>
+                    <div>
+                        <label for="phone_number" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: #374151;">
+                            Phone Number (E.164 format)
+                        </label>
+                        <input
+                            type="tel"
+                            id="phone_number"
+                            name="phone_number"
+                            required
+                            placeholder="+1-555-0123 or +447383123424"
+                            pattern="^\+[1-9]\d{1,14}$"
+                            style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;"
+                        >
+                        <small style="color: #6b7280; font-size: 0.875rem;">Include country code (e.g., +1 for US, +44 for UK)</small>
+                    </div>
+                    <div>
+                        <label for="meeting_description" style="display: block; font-weight: 500; margin-bottom: 0.5rem; color: #374151;">
+                            Meeting Description
+                        </label>
+                        <input
+                            type="text"
+                            id="meeting_description"
+                            name="meeting_description"
+                            required
+                            placeholder="Q4 Planning Meeting - budget discussion"
+                            style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;"
+                        >
+                    </div>
+                    <div>
+                        <button type="submit" class="btn" style="width: 100%; cursor: pointer; border: none; font-size: 1rem;">
+                            Preview Call →
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <h3>Total Calls</h3>
+            <div class="value">{{ stats.total_calls }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Successful Calls</h3>
+            <div class="value">{{ stats.successful_calls }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Recent (7 Days)</h3>
+            <div class="value">{{ stats.recent_calls }}</div>
+        </div>
+    </div>
+
+    <h2 style="margin-bottom: 1.5rem; color: #1f2937; font-size: 1.5rem;">Recent Calls</h2>
+
+    {% if calls %}
+        {% for call in calls %}
+        <div class="card">
+            <a href="/call/{{ call.id }}" class="call-item">
+                <div class="card-body">
+                    <div class="call-meta">
+                        <div>
+                            <div class="call-name">{{ call.attendee_name }}</div>
+                            <div class="call-meeting">{{ call.meeting_description }}</div>
+                            <div style="margin-top: 0.5rem;">
+                                <span class="badge {% if call.call_status in ['completed', 'ended'] %}badge-success{% else %}badge-warning{% endif %}">
+                                    {{ call.call_status }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="call-date">
+                            {{ call.call_timestamp|datetime }}
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+            <h3>No calls yet</h3>
+            <p>Run the prep-meeting.py script to make your first call.</p>
+        </div>
+    {% endif %}
+{% endblock %}

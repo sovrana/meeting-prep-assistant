@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}{{ call.attendee_name }} - Meeting Prep{% endblock %}
+
+{% block content %}
+    <div style="margin-bottom: 2rem;">
+        <a href="/" style="color: #667eea; text-decoration: none; font-weight: 500;">← Back to all calls</a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <h1 style="font-size: 2rem; font-weight: 700; color: #1f2937; margin-bottom: 0.5rem;">
+                        {{ call.attendee_name }}
+                    </h1>
+                    <p style="color: #6b7280; font-size: 1.1rem; margin-bottom: 0.75rem;">
+                        {{ call.meeting_description }}
+                    </p>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+                        <span class="badge {% if call.call_status in ['completed', 'ended'] %}badge-success{% else %}badge-warning{% endif %}">
+                            {{ call.call_status }}
+                        </span>
+                        <span style="color: #9ca3af; font-size: 0.875rem;">
+                            📞 {{ call.phone_number }}
+                        </span>
+                        <span style="color: #9ca3af; font-size: 0.875rem;">
+                            📅 {{ call.call_timestamp_formatted }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            {% if call.summary %}
+            <div class="summary">
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;">
+                    📋 Summary
+                </h3>
+                <div style="line-height: 1.8;">
+                    {{ call.summary|markdown|safe }}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if call.transcript %}
+            <div style="margin-top: 2rem;">
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #1f2937;">
+                    📝 Full Transcript
+                </h3>
+                <div class="transcript">{{ call.transcript }}</div>
+            </div>
+            {% endif %}
+
+            {% if call.report_file_path %}
+            <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
+                <p style="color: #6b7280; font-size: 0.875rem;">
+                    💾 Report file: <code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">{{ call.report_file_path }}</code>
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

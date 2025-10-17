@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "5001:5001"
+    environment:
+      - VAPI_API_KEY=${VAPI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - VAPI_PHONE_NUMBER_ID=${VAPI_PHONE_NUMBER_ID:-}
+      - DATABASE_PATH=/app/data/meeting_prep.db
+    volumes:
+      # Persist database and meeting notes
+      - meeting-data:/app/data
+      - meeting-notes:/app/meeting-notes
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5001/', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  meeting-data:
+  meeting-notes:

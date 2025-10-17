@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Search Calls - Meeting Prep Assistant{% endblock %}
+
+{% block content %}
+    <h2 style="margin-bottom: 1.5rem; color: #1f2937; font-size: 1.5rem;">Search Calls</h2>
+
+    <div class="search-box">
+        <form method="get" action="/search">
+            <input
+                type="text"
+                name="q"
+                placeholder="Search by attendee name or meeting description..."
+                value="{{ query }}"
+                autofocus
+            >
+        </form>
+    </div>
+
+    {% if query %}
+        <h3 style="margin-bottom: 1.5rem; color: #6b7280; font-size: 1.1rem;">
+            {% if calls %}
+                Found {{ calls|length }} result(s) for "{{ query }}"
+            {% else %}
+                No results found for "{{ query }}"
+            {% endif %}
+        </h3>
+
+        {% if calls %}
+            {% for call in calls %}
+            <div class="card">
+                <a href="/call/{{ call.id }}" class="call-item">
+                    <div class="card-body">
+                        <div class="call-meta">
+                            <div>
+                                <div class="call-name">{{ call.attendee_name }}</div>
+                                <div class="call-meeting">{{ call.meeting_description }}</div>
+                                <div style="margin-top: 0.5rem;">
+                                    <span class="badge {% if call.call_status in ['completed', 'ended'] %}badge-success{% else %}badge-warning{% endif %}">
+                                        {{ call.call_status }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="call-date">
+                                {{ call.call_timestamp|datetime }}
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <h3>No results found</h3>
+                <p>Try searching for a different name or meeting description.</p>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <h3>Start searching</h3>
+            <p>Enter a name or meeting description to find calls.</p>
+        </div>
+    {% endif %}
+{% endblock %}

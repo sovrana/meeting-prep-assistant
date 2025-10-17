@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Preview Call - {{ attendee_name }}{% endblock %}
+
+{% block content %}
+    <div style="margin-bottom: 2rem;">
+        <a href="/" style="color: #667eea; text-decoration: none; font-weight: 500;">← Back to home</a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h1 style="font-size: 1.75rem; font-weight: 700; color: #1f2937;">
+                Preview Call
+            </h1>
+        </div>
+        <div class="card-body">
+            <div style="background: #f9fafb; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: #1f2937;">
+                    Call Details
+                </h3>
+                <div style="display: grid; gap: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #6b7280; font-weight: 500;">Attendee:</span>
+                        <span style="color: #1f2937; font-weight: 600;">{{ attendee_name }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #6b7280; font-weight: 500;">Phone:</span>
+                        <span style="color: #1f2937; font-weight: 600;">{{ phone_number }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #6b7280; font-weight: 500;">Meeting:</span>
+                        <span style="color: #1f2937; font-weight: 600;">{{ meeting_description }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary" style="margin-bottom: 2rem;">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">
+                    📋 What Alex Will Say
+                </h3>
+                <div style="line-height: 1.8;">
+                    <p style="margin-bottom: 1rem;">
+                        <strong>Introduction:</strong>
+                    </p>
+                    <p style="font-style: italic; margin-bottom: 1.5rem;">
+                        "Hi {{ attendee_name }}, this is Alex, Marc's meeting preparation assistant.
+                        I'm an AI agent calling to help Marc prepare for your meeting about {{ meeting_description }}.
+                        Do you have 2 minutes for a couple of quick questions?
+                        You can end this call anytime if you're not comfortable."
+                    </p>
+
+                    <p style="margin-bottom: 1rem;">
+                        <strong>If they agree, Alex will ask:</strong>
+                    </p>
+                    <ol style="margin-left: 1.5rem; margin-bottom: 1.5rem;">
+                        <li style="margin-bottom: 0.5rem;">What are your main goals for this meeting?</li>
+                        <li style="margin-bottom: 0.5rem;">Are there any specific topics or questions you want to cover?</li>
+                        <li style="margin-bottom: 0.5rem;">Do you have any current pain points or challenges relevant to this meeting?</li>
+                    </ol>
+
+                    <p style="color: #6b7280; font-size: 0.9rem;">
+                        The call will be recorded and transcribed.
+                    </p>
+                </div>
+            </div>
+
+            <form action="/make-call" method="POST">
+                <input type="hidden" name="attendee_name" value="{{ attendee_name }}">
+                <input type="hidden" name="phone_number" value="{{ phone_number }}">
+                <input type="hidden" name="meeting_description" value="{{ meeting_description }}">
+
+                <div style="display: flex; gap: 1rem;">
+                    <a href="/" class="btn" style="flex: 1; text-align: center; background: #6b7280; text-decoration: none;">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn" style="flex: 1; cursor: pointer; border: none; font-size: 1rem; background: #10b981;">
+                        ✓ Approve & Make Call
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
